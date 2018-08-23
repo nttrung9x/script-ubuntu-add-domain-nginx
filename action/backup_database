@@ -1,0 +1,52 @@
+#!/bin/bash
+
+backupdata ()
+{
+echo "Is backing up $dataname..."
+mkdir -p /home/private_html/backup/$dataname
+cd /home/private_html/backup/$dataname
+mysqldump -u $user -p$pass $dataname | gzip -9 > $dataname.sql.gz
+
+echo "Backup successfully!"
+echo "Path of file backup: /home/private_html/backup/$dataname/$dataname.sql.gz"
+}
+
+printf "=========================================================================\n"
+printf "                             Backup Data\n"
+printf "=========================================================================\n"
+echo -n "Type the user of database [ENTER]: "
+read user
+echo -n "Type the password of database [ENTER]: "
+read pass
+echo -n "Type database name you want backup and press [ENTER]: "
+read dataname
+
+if [ "$user" = "" ]; then
+domain_path="$dataname"
+else
+domain_path="$user/$dataname"
+fi
+
+if [ -f /var/lib/mysql/$dataname/db.opt ]; then
+echo "Found $dataname"
+if [ -f /home/private_html/backup/$dataname/$dataname.sql.gz ]; then
+read -r -p "Old fileFound , you are sure want to delete old file and create a new file ? [y/N] " response
+case $response in
+    [yY][eE][sS]|[yY]) 
+    	rm -rf /home/private_html/backup/$dataname
+	
+	backupdata
+        ;;
+    *)
+        echo "Bye....!"
+        ;;
+esac
+else
+	backupdata
+fi
+
+else
+echo "Not Found $dataname, please try again"
+echo "Bye...!"
+exit
+fi

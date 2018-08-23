@@ -1,0 +1,36 @@
+#!/bin/sh
+
+clear
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root"
+  exit
+fi
+
+prompt="You choose:"
+options=("Show All Domain" "Add Domain" "Delete Domain" "Backup Code" "Back Data" "Create Database") # End Options
+
+printf "=========================================================================\n"
+printf "                               TDC Script \n"
+printf "=========================================================================\n"
+printf "                                 Menu\n"
+printf "=========================================================================\n"
+PS3="
+$prompt"
+select opt in "${options[@]}" "Exit"; do
+
+    case "$REPLY" in
+	    1 ) /etc/tdc/action/domain_list;;
+	    2 ) /etc/tdc/action/add_domain;;
+	    3 ) /etc/tdc/action/delete_domain;;
+	    4 ) /etc/tdc/action/backup_code;;
+	    5 ) /etc/tdc/action/backup_database;;
+	    6 ) /etc/tdc/action/create_database;;
+	    # End Menu
+
+	    $(( ${#options[@]}+1 )) ) printf "\nBye!\nIf you can, please visits https://toidicode.com/\n\n"; break;;
+	    *) echo "In Correct, please try again";continue;;
+
+    esac
+
+done
+

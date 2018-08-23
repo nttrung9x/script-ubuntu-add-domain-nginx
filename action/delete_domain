@@ -1,0 +1,52 @@
+#!/bin/bash
+
+printf "=========================================================================\n"
+printf "                             Delete Domain\n"
+printf "=========================================================================\n"
+printf "Sure to delete it\n"
+
+echo -n "Type the user contain list domain or leave null for set /home folder  and press [ENTER]: "
+read user
+
+echo -n "Type the domain name and press [ENTER]: "
+read domain
+
+if [ "$user" = "" ]; then
+domain_path="$domain"
+else
+domain_path="$user/$domain"
+fi
+
+if [ -f /etc/nginx/sites-enabled/$domain.conf ]; then
+read -r -p "Found $domain, You are sure to delete ? [y/N] " response
+case $response in
+    [yY][eE][sS]|[yY]) 
+rm -rf /home/$domain_path
+rm -f /etc/nginx/sites-enabled/$domain.conf
+service nginx reload
+
+echo "Delete successfully...!"
+        ;;
+    *)
+        echo "Bye....!"
+        ;;
+esac
+elif [ -f /etc/nginx/sites-available/$domain.conf ]; then
+read -r -p "Found $domain, You are sure to delete ? [y/N] " response
+case $response in
+    [yY][eE][sS]|[yY])
+rm -rf /home/$domain_path
+rm -f /etc/nginx/sites-available/$domain.conf
+service nginx reload
+
+echo "Delete successfully...!"
+        ;;
+    *)
+        echo "Bye....!"
+        ;;
+esac
+else
+echo "Not Found $domain, please check again!"
+echo "Bye....!"
+exit
+fi

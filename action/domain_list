@@ -1,0 +1,9 @@
+#!/bin/bash
+
+printf "=========================================================================\n"
+printf "                            List Domain\n"
+printf "=========================================================================\n"
+echo "=========== enabled folder: ================"
+ls -1 /etc/nginx/sites-enabled/
+echo "=========== available Folder ==============="
+ls -1 /etc/nginx/sites-available/

@@ -1,0 +1,52 @@
+#!/bin/bash
+
+backupcode()
+{
+	echo "Backup $website, please waiting...."
+	cd /home/$website/
+	tar czf $website.tar.gz *
+	
+	mkdir -p /home/private_html/backup/$website/
+	mv $website.tar.gz /home/private_html/backup/$website/$website.tar.gz
+
+	echo "Backup $website successfully..."
+	echo "Path of file Backup: /home/private_html/backup/$website/$website.tar.gz"
+}
+
+printf "=========================================================================\n"
+printf "                             Backup code\n"
+printf "=========================================================================\n"
+echo -n "Type the user contain list domain or leave null for set /home folder  and press [ENTER]: "
+read user
+echo -n "Type domain name want to backup and press [ENTER]: "
+read website
+
+if [ "$user" = "" ]; then
+domain_path="$website"
+else
+domain_path="$user/$website"
+fi
+
+if [ -f /home/$domain_path/public_html/index.php ]; then
+echo "Found $domain_path"
+if [ -f /home/private_html/backup/$website/$website.tar.gz ]; then
+read -r -p "Old file Found , you are sure want to delete old file and create a new file ? [y/N] " response
+case $response in
+    [yY][eE][sS]|[yY]) 
+    	rm -rf /home/private_html/backup/$website/
+	
+	backupcode
+        ;;
+    *)
+        echo "Bye....!"
+        ;;
+esac
+else
+	backupcode
+fi
+else
+echo "Sorry, we did not found $website"
+echo "Or $website is empty"
+echo "Bye...!"
+exit
+fi

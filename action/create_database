@@ -1,0 +1,70 @@
+#!/bin/bash
+
+if [ -f /var/lib/mysql/mysql/db.opt ]; then
+printf "=========================================================================\n"
+printf "                             Create Database\n"
+printf "=========================================================================\n"
+echo -n "Type a database name yout want to create and press [ENTER]: "
+read dataname
+if [ "$dataname" = "" ]; then
+echo "Database name is required"
+exit
+fi
+
+if [ -f /var/lib/mysql/$dataname/db.opt ]; then
+echo "Data $dataname already exist"
+echo "Bye....!"
+exit
+fi
+
+echo -n "Type username of database you want to create and press enter [ENTER]: "
+read username
+if [ "$username" = "" ]; then
+	username="$dataname"
+	echo "Database username is empty, We set default database username is $dataname"
+fi
+
+echo -n "Type password of $username [ENTER]: "
+read password
+if [ "$password" = "" ]; then
+	password="$dataname"
+	echo "Password is empty, We set defaut password is $dataname"
+fi
+
+#root user and pasword
+echo -n "Type root database username [ENTER]: "
+read rootuser
+if [ "$rootuser" = "" ]; then
+	$rootuser = "root"
+	echo "Set default is root"
+fi
+echo -n "Type root database password [ENTER]: "
+read rootpass
+if [ "$rootpass" = "" ]; then
+	$rootpass =""
+	echo "Set default is NULL"
+fi
+
+
+    cat > "/tmp/config.temp" <<END
+CREATE DATABASE $dataname COLLATE utf8_general_ci;
+CREATE USER '$username'@'localhost' IDENTIFIED BY '$password';
+GRANT ALL PRIVILEGES ON $dataname . * TO '$username'@'localhost';
+FLUSH PRIVILEGES;
+END
+
+mysql -u $rootuser -p$rootpass < /tmp/config.temp
+rm -f /tmp/config.temp
+
+echo "Created database $dataname successfully !"
+echo "==================="
+echo "Database detail:"
+printf "database name: $dataname\nUser name: $username\nPassword: $password\n\n"
+
+echo "Bye....!"
+
+else
+echo "Mysql was not running or user and password invaild!!!"
+echo "please check again!!!"
+exit
+fi
